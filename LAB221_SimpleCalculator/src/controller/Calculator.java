@@ -47,6 +47,7 @@ public class Calculator {
 		} else {
 			displayAppend(btn.getText());
 		}
+		isPickingOperator = false;
 	}
 	public void pressOperator(JButton op){
 		if(operator == Operator.NONE){
@@ -112,6 +113,7 @@ public class Calculator {
 			return;
 		}
 		
+		
 		switch(operator){
 			case ADD:
 				number0 += number1;
@@ -153,8 +155,16 @@ public class Calculator {
 		memory = 0;
 		btnMR.setEnabled(hasMemory());
 	}
+	public void pressDot(){
+		if(txtDisplay.getText().contains(".")){
+			return;
+		}
+		
+		displayAppend(".");
+	}
 	public void pressClearAll(){
 		number0 = 0;
 		number1 = 0;
+		operator = Operator.NONE;
 	}
 }

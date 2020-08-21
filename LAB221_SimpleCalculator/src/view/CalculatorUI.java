@@ -232,6 +232,11 @@ public class CalculatorUI extends javax.swing.JFrame {
         btnDot.setBackground(new java.awt.Color(153, 153, 255));
         btnDot.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btnDot.setText(".");
+        btnDot.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDotActionPerformed(evt);
+            }
+        });
 
         btnInvertSign.setBackground(new java.awt.Color(102, 255, 102));
         btnInvertSign.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -504,6 +509,10 @@ public class CalculatorUI extends javax.swing.JFrame {
     private void btnEqualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEqualActionPerformed
         c.pressEqual();
     }//GEN-LAST:event_btnEqualActionPerformed
+
+    private void btnDotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDotActionPerformed
+        c.pressDot();
+    }//GEN-LAST:event_btnDotActionPerformed
 
 	/**
 	 * @param args the command line arguments
