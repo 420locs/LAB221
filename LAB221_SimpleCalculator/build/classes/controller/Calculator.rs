@@ -1,2 +1,0 @@
-controller.Operator
-controller.Calculator
