@@ -91,8 +91,9 @@ public class Calculator {
 				break;
 			default:
 				if(number0 < 0){
-					JOptionPane.showMessageDialog(null, "You cannot square to negative number!");
-					break;
+					txtDisplay.setText("ERROR");
+					isReset = true;
+					return;
 				}
 				number0 = Math.sqrt(number0);
 				break;
@@ -126,8 +127,10 @@ public class Calculator {
 				break;
 			case DIVIDE:
 				if(number1 == 0){
-					JOptionPane.showMessageDialog(null, "You cannot divide by zero!");
-					break;
+					txtDisplay.setText("ERROR");
+					operator = Operator.NONE;
+					isReset = true;
+					return;
 				}
 				number0 /= number1;
 				break;
