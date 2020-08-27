@@ -39,7 +39,7 @@ public class GameUI extends javax.swing.JFrame {
         labelElapsed = new javax.swing.JLabel();
         cbbSize = new javax.swing.JComboBox<>();
         panelGameArea = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
 
         jLabel4.setText("jLabel4");
 
@@ -62,23 +62,23 @@ public class GameUI extends javax.swing.JFrame {
 
         cbbSize.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "3x3", "4x4", "5x5", "6x6", "7x7", "8x8", "9x9" }));
 
-        jButton1.setText("jButton1");
+        jLabel5.setText("Welcome to Number Puzzle Game!");
 
         javax.swing.GroupLayout panelGameAreaLayout = new javax.swing.GroupLayout(panelGameArea);
         panelGameArea.setLayout(panelGameAreaLayout);
         panelGameAreaLayout.setHorizontalGroup(
             panelGameAreaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelGameAreaLayout.createSequentialGroup()
-                .addGap(57, 57, 57)
-                .addComponent(jButton1)
-                .addContainerGap(80, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelGameAreaLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel5)
+                .addContainerGap())
         );
         panelGameAreaLayout.setVerticalGroup(
             panelGameAreaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelGameAreaLayout.createSequentialGroup()
-                .addGap(54, 54, 54)
-                .addComponent(jButton1)
-                .addContainerGap(137, Short.MAX_VALUE))
+                .addGap(86, 86, 86)
+                .addComponent(jLabel5)
+                .addContainerGap(114, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -213,12 +213,12 @@ public class GameUI extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnNewGame;
     private javax.swing.JComboBox<String> cbbSize;
-    private javax.swing.JButton jButton1;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel labelElapsed;
     private javax.swing.JLabel labelMoveCount;
