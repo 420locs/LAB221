@@ -34,7 +34,7 @@ public class GameController {
 
 	private int size = 3; //default size is 3x3
 	private final HashMap<Integer, JButton> buttonMap = new HashMap<>();
-	private List<Integer> gameMatrix;
+	private List<Integer> gameVector;
 	private int emptyButtonIndex;
 	private int moveCount;
 	private int elapsed;
@@ -60,28 +60,53 @@ public class GameController {
 	
 	void updateSize() {
 		String s = cbbSize.getSelectedItem().toString();
-		String[] size = s.split("x");
-		this.size = Integer.parseInt(size[0]);
+		String[] sizeOfGame = s.split("x");
+		this.size = Integer.parseInt(sizeOfGame[0]);
 	}
 	
-	List<Integer> generateRandomMatrixNumber(){
+	List<Integer> generateGameVector(){
 		List<Integer> list = new ArrayList<>();
 		for(int i = 0; i < size*size; i++){
 			list.add(i+1);
 		}
-		Collections.shuffle(list);
+		do {
+			Collections.shuffle(list);
+		} while (!canSolved(list));
 		return list;
 	}
-
+	/**
+	 * Check can a game is solvable or not.
+	 * A solvable game must have 2 factors:
+	 *	+ Inversion: pair of numbers haven't in order (number a > number b)
+	 *	+ Polarity: number of Inversion (Odd is unsolvable, Even is solvable)
+	 * @param list of number shuffled
+	 * @return solvable or not
+	 */
+	boolean canSolved(List<Integer> list){
+		int polarity = 0;
+		for (int i = 0; i < list.size(); i++) {
+			if (list.get(i) == size * size) {
+				continue;
+			}
+			for (int j = i; j < list.size(); j++) {
+				if (list.get(i) > list.get(j)) {
+					polarity++;
+				}
+			}
+		}
+		if(polarity % 2 == 1 )
+			System.out.println("oops");
+		return polarity % 2 == 0;
+	}
 	 
 	
 	void setupGame(){				
 		updateSize();
 		panelGameArea.removeAll();
 		panelGameArea.setLayout(new GridLayout(size, size, GRID_GAP, GRID_GAP));
-		gameMatrix = generateRandomMatrixNumber();
+		gameVector = generateGameVector();
 		for(int i = 0; i < size*size; i++){
-			int number = gameMatrix.get(i);
+			int number = gameVector.get(i);
 			JButton button = new JButton();
 			button.setPreferredSize(new Dimension(BUTTON_SIZE, BUTTON_SIZE));
 			addActionButton(button);
@@ -105,9 +130,9 @@ public class GameController {
 					if(button.getText().isEmpty())
 						return;
 					int currentBtn = Integer.parseInt(button.getText());
-					int current = gameMatrix.indexOf(currentBtn);
+					int current = gameVector.indexOf(currentBtn);
 					moving(current);
-					monitoringGameMatrix();
+					
 					winningNotification();
 				}
 			});
@@ -120,29 +145,19 @@ public class GameController {
 		}
 	}
 	boolean hasNear(int current){
-		if(isTop(current) || isBottom(current) || isLeft(current) || isRight(current))
-			return true;
-		return false;
+		return isTop(current) || isBottom(current) || isLeft(current) || isRight(current);
 	}
 	boolean isTop(int current){
-		if(current-size == emptyButtonIndex)
-			return true;
-		return false;
+		return current-size == emptyButtonIndex;
 	}
 	boolean isBottom(int current){
-		if(current+size == emptyButtonIndex)
-			return true;
-		return false;
+		return current+size == emptyButtonIndex;
 	}
 	boolean isLeft(int current){
-		if(current-1 == emptyButtonIndex)
-			return true;
-		return false;
+		return current-1 == emptyButtonIndex;
 	}
 	boolean isRight(int current){
-		if(current+1 == emptyButtonIndex)
-			return true;
-		return false;
+		return current+1 == emptyButtonIndex;
 	}
 	
 	void swapButton(int indexA, int indexB){
@@ -152,43 +167,35 @@ public class GameController {
 		buttonMap.get(indexA).setText(buttonMap.get(indexB).getText());
 		buttonMap.get(indexB).setText(tempS);
 		
-		int tempN = gameMatrix.get(--indexA);
-		gameMatrix.set(indexA, gameMatrix.get(--indexB));
-		gameMatrix.set(indexB, tempN);
+		int tempN = gameVector.get(--indexA);
+		gameVector.set(indexA, gameVector.get(--indexB));
+		gameVector.set(indexB, tempN);
 		
 	}
 	void winningNotification(){
-		if(!isWin())
+		if(!isWon())
 			return;
-		JOptionPane.showMessageDialog(labelMoveCount, "Hey, you just won!");
+		JOptionPane.showMessageDialog(v, "Hey, you just won!");
 	}
 	/**
 	 * Are you winning, son?
 	 * check matched key-value of every button from buttonMap
 	 * @return Winning status
 	 */
-	boolean isWin(){
+	boolean isWon(){
 		for(Map.Entry<Integer, JButton> entry : buttonMap.entrySet()){
 			int key = entry.getKey();
 			String text = entry.getValue().getText();
 			int value = size*size;
 			try {
 				value = Integer.parseInt(text);
-			} catch (Exception e) {
+			} catch (NumberFormatException e) {
 			}
 //			System.out.println(key + " : " + value); debugger :))))
 			if(key != value)
 				return false;
 		}
 		return true;
-	}
-	
-	private void monitoringGameMatrix() {
-		for (int i = 0; i < size*size; i++) {
-			if(i % size == 0)
-				System.out.println("");
-			System.out.print(gameMatrix.get(i) + " ");
-		}
 	}
 	
 	public static void main(String[] args) {
