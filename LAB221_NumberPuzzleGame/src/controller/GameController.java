@@ -24,7 +24,6 @@ public class GameController {
 	final int BUTTON_SIZE = 60;
 	final int GRID_GAP = 20;
 	
-	
 	private final GameUI v = new GameUI();
 	private final JButton btnNewGame = v.getBtnNewGame();
 	private final JLabel labelElapsed = v.getLabelElapsed();
@@ -33,37 +32,78 @@ public class GameController {
 	private final JPanel panelGameArea = v.getPanelGameArea();
 
 	private int size = 3; //default size is 3x3
-	private final HashMap<Integer, JButton> buttonMap = new HashMap<>();
+	private final List<JButton> buttonMap = new ArrayList<>();
 	private List<Integer> gameVector;
 	private int emptyButtonIndex;
+	private int timer;
 	private int moveCount;
-	private int elapsed;
-
+	private boolean isPlaying = false;
+	private Thread timing;
+	
 
 	public GameController() {
 		addAction();
+		timing = new Thread(){
+			@Override
+			public void run() {
+				while(true){
+					try {
+						Thread.sleep(1);
+						if (isPlaying) {
+							timer++;
+						}
+						labelElapsed.setText(timer + " sec");
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+					}
+				}
+			}	
+		};
+		timing.start();
+		moveCount = 0;
 		v.setVisible(true);
 	}
 
+	/**
+	 * Create base-buttons of the game.
+	 * create "New Game" button
+	 */
 	void addAction() {
 		btnNewGame.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if(isPlaying){
+					int choice = JOptionPane.showConfirmDialog(v, "Hey, you just playing another game\nWanna create new game?", "Continue?", JOptionPane.YES_NO_OPTION);
+					if(choice == JOptionPane.NO_OPTION)
+						return;
+					isPlaying = false;
+				}
 				/*
 				Some fetures of gameplay here
 				*/
+				timer = 0;
+				moveCount = 0;
 				setupGame();
 			}
 		});
-
+		
 	}
-	
+	/**
+	 * Update size of game.
+	 * get size from ComboBox and assign to global size.
+	 */
 	void updateSize() {
 		String s = cbbSize.getSelectedItem().toString();
 		String[] sizeOfGame = s.split("x");
 		this.size = Integer.parseInt(sizeOfGame[0]);
 	}
 	
+	/**
+	 * Generate solvable game vector.
+	 * initialize an ArrayList contains number from 1 to size*size,
+	 * shuffles it until found an solvable game vector.
+	 * @return solvable game vector.
+	 */
 	List<Integer> generateGameVector(){
 		List<Integer> list = new ArrayList<>();
 		for(int i = 0; i < size*size; i++){
@@ -94,17 +134,19 @@ public class GameController {
 				}
 			}
 		}
-		if(polarity % 2 == 1 )
-			System.out.println("oops");
 		return polarity % 2 == 0;
 	}
 	 
-	
+	/**
+	 * Setup game layout.
+	 * add buttons and resize game layout.
+	 */
 	void setupGame(){				
 		updateSize();
 		panelGameArea.removeAll();
 		panelGameArea.setLayout(new GridLayout(size, size, GRID_GAP, GRID_GAP));
 		gameVector = generateGameVector();
+		
 		for(int i = 0; i < size*size; i++){
 			int number = gameVector.get(i);
 			JButton button = new JButton();
@@ -118,30 +160,39 @@ public class GameController {
 				button.setText(number+"");
 			
 			panelGameArea.add(button);
-			buttonMap.put(i+1, button);
+			buttonMap.add(i, button);
 		}
 		
 		v.pack();
 	}
+	
+	/**
+	 * Add Action listener to Button.
+	 * add moving feature to any button
+	 * @param button 
+	 */
 	void addActionButton(JButton button){
 		button.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					if(button.getText().isEmpty())
 						return;
+					if(!isPlaying){
+						isPlaying = true;
+					}
 					int currentBtn = Integer.parseInt(button.getText());
 					int current = gameVector.indexOf(currentBtn);
 					moving(current);
-					
 					winningNotification();
 				}
 			});
 	}
 	
 	void moving(int current){
-		if(hasNear(current)){
+		if(hasNear(current)){ //If clicked button near by empty button -> swap
 			swapButton(current, emptyButtonIndex);
 			emptyButtonIndex = current;
+			labelMoveCount.setText(++moveCount + "");
 		}
 	}
 	boolean hasNear(int current){
@@ -160,39 +211,35 @@ public class GameController {
 		return current+1 == emptyButtonIndex;
 	}
 	
+	/**
+	 * Swap any 2 button with their index.
+	 * @param indexA 
+	 * @param indexB 
+	 */
 	void swapButton(int indexA, int indexB){
-		indexA++; // Becase we swap 2 key from buttonMap (start from 1)
-		indexB++; // And array start from 0. So we increase 1 for compatible manipulation
 		String tempS = buttonMap.get(indexA).getText();
 		buttonMap.get(indexA).setText(buttonMap.get(indexB).getText());
 		buttonMap.get(indexB).setText(tempS);
 		
-		int tempN = gameVector.get(--indexA);
-		gameVector.set(indexA, gameVector.get(--indexB));
+		int tempN = gameVector.get(indexA);
+		gameVector.set(indexA, gameVector.get(indexB));
 		gameVector.set(indexB, tempN);
 		
 	}
 	void winningNotification(){
 		if(!isWon())
 			return;
+		isPlaying = false;
 		JOptionPane.showMessageDialog(v, "Hey, you just won!");
 	}
 	/**
-	 * Are you winning, son?
+	 * Are you winning, son?.
 	 * check matched key-value of every button from buttonMap
 	 * @return Winning status
 	 */
 	boolean isWon(){
-		for(Map.Entry<Integer, JButton> entry : buttonMap.entrySet()){
-			int key = entry.getKey();
-			String text = entry.getValue().getText();
-			int value = size*size;
-			try {
-				value = Integer.parseInt(text);
-			} catch (NumberFormatException e) {
-			}
-//			System.out.println(key + " : " + value); debugger :))))
-			if(key != value)
+		for(int i = 0; i < gameVector.size()-1; i++){
+			if(gameVector.get(i) > gameVector.get(i+1))
 				return false;
 		}
 		return true;
