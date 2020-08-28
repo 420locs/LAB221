@@ -14,6 +14,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 import view.GameUI;
 
 /**
@@ -43,23 +44,33 @@ public class GameController {
 
 	public GameController() {
 		addAction();
-		timing = new Thread(){
+		Timer t = new Timer(1000, new ActionListener() {
 			@Override
-			public void run() {
-				while(true){
-					try {
-						Thread.sleep(1);
-						if (isPlaying) {
-							timer++;
-						}
-						labelElapsed.setText(timer + " sec");
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-					}
+			public void actionPerformed(ActionEvent e) {
+				if (isPlaying) {
+					timer++;
 				}
-			}	
-		};
-		timing.start();
+				labelElapsed.setText(timer + " sec");
+			}
+		});
+		t.start();
+//		timing = new Thread(){
+//			@Override
+//			public void run() {
+//				while(true){
+//					try {
+//						Thread.sleep(1);
+//						if (isPlaying) {
+//							timer++;
+//						}
+//						labelElapsed.setText(timer + " sec");
+//						Thread.sleep(1000);
+//					} catch (InterruptedException e) {
+//					}
+//				}
+//			}	
+//		};
+//		timing.start();
 		moveCount = 0;
 		v.setVisible(true);
 	}
