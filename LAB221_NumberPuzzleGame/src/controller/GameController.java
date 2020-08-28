@@ -93,7 +93,8 @@ public class GameController {
 				Some fetures of gameplay here
 				*/
 				timer = 0;
-				moveCount = 0;
+				moveCount = 0;			
+				labelMoveCount.setText(moveCount + "");
 				setupGame();
 			}
 		});
@@ -122,7 +123,7 @@ public class GameController {
 		}
 		do {
 			Collections.shuffle(list);
-		} while (!canSolved(list));
+		} while (!isSolvable(list));
 		return list;
 	}
 	/**
@@ -133,7 +134,7 @@ public class GameController {
 	 * @param list of number shuffled
 	 * @return solvable or not
 	 */
-	boolean canSolved(List<Integer> list){
+	boolean isSolvable(List<Integer> list){
 		int polarity = 0;
 		for (int i = 0; i < list.size(); i++) {
 			if (list.get(i) == size * size) {
@@ -145,7 +146,30 @@ public class GameController {
 				}
 			}
 		}
-		return polarity % 2 == 0;
+		if (size % 2 == 1) {
+			return polarity % 2 == 0;
+		} else {
+			if (isBlankInOddRow(list)) {
+				return polarity % 2 == 1;
+			} else {
+				return polarity % 2 == 0;
+			}
+		}
+	}
+	/**
+	 * Check the position of blank button is in odd row 
+	 * @param list vector of game
+	 * @return True in odd row; False otherwise
+	 */
+	private boolean isBlankInOddRow(List<Integer> list) {
+		for (int i = 0; i < size * size; i++) {
+				if(list.get(i) == size*size)
+					return true;
+				if (i % size == size - 1) {
+					i += size;
+				}
+			}
+		return false;
 	}
 	 
 	/**
