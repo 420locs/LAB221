@@ -245,8 +245,4 @@ public class GameController {
 		return true;
 	}
 	
-	public static void main(String[] args) {
-		GameController g = new GameController();
-
-	}
 }
