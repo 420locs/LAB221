@@ -3,7 +3,9 @@ package game;
 import controller.GameController;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.HeadlessException;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -32,8 +34,14 @@ public class Game extends javax.swing.JFrame {
         btnSave = new javax.swing.JButton();
         btnExit = new javax.swing.JButton();
         labelPoint = new javax.swing.JLabel();
+        playZone = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                formMouseClicked(evt);
+            }
+        });
 
         btnPause.setText("Pause");
         btnPause.addActionListener(new java.awt.event.ActionListener() {
@@ -58,25 +66,43 @@ public class Game extends javax.swing.JFrame {
 
         labelPoint.setText("Points: 0");
 
+        playZone.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 255)));
+
+        javax.swing.GroupLayout playZoneLayout = new javax.swing.GroupLayout(playZone);
+        playZone.setLayout(playZoneLayout);
+        playZoneLayout.setHorizontalGroup(
+            playZoneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        playZoneLayout.setVerticalGroup(
+            playZoneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 454, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btnPause)
-                .addGap(80, 80, 80)
-                .addComponent(btnSave)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(labelPoint)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 393, Short.MAX_VALUE)
-                .addComponent(btnExit)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(playZone, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnPause)
+                        .addGap(80, 80, 80)
+                        .addComponent(btnSave)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(labelPoint)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 393, Short.MAX_VALUE)
+                        .addComponent(btnExit)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(476, Short.MAX_VALUE)
+                .addContainerGap()
+                .addComponent(playZone, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnPause)
                     .addComponent(btnSave)
@@ -89,8 +115,6 @@ public class Game extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnPauseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPauseActionPerformed
-		JButton b = new JButton("cai lon");
-		
 		
     }//GEN-LAST:event_btnPauseActionPerformed
 
@@ -101,6 +125,10 @@ public class Game extends javax.swing.JFrame {
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
         System.exit(0);
     }//GEN-LAST:event_btnExitActionPerformed
+
+    private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
+        controller.jump();
+    }//GEN-LAST:event_formMouseClicked
 
 	/**
 	 * @param args the command line arguments
@@ -155,9 +183,9 @@ public class Game extends javax.swing.JFrame {
 		return labelPoint;
 	}
 
-//	public JPanel getPlayZone() {
-//		return playZone;
-//	}
+	public JPanel getPlayZone() {
+		return playZone;
+	}
 	
 	
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -165,5 +193,6 @@ public class Game extends javax.swing.JFrame {
     private javax.swing.JButton btnPause;
     private javax.swing.JButton btnSave;
     private javax.swing.JLabel labelPoint;
+    private javax.swing.JPanel playZone;
     // End of variables declaration//GEN-END:variables
 }

@@ -29,17 +29,16 @@ public class GameController implements MouseListener{
 	private int fallingVelocity = 10;
 
 	private boolean isRunning = true;					//True default for testing, change it after finished the test
-	List<JButton> pipes;
+	LinkedList<JButton> pipes;
 	public GameController() {
 	}
 
 	public GameController(Game game) {
 		this.game = game;
-		pipes = new ArrayList<>();
+		pipes = new LinkedList<>();
 		initInteface();
 		playZone.addMouseListener(this);
-		addPipe();
-//		initPipes();
+		initPipes();
 		new Thread() {
 			@Override
 			public void run() {
@@ -61,7 +60,7 @@ public class GameController implements MouseListener{
 						if(isRunning){
 							pipesMotion();
 						}
-						Thread.sleep(29);
+						Thread.sleep(9);
 					} catch (Exception e) {
 					}
 				}
@@ -70,37 +69,41 @@ public class GameController implements MouseListener{
 		}.start();
 	}
 	private void initInteface(){
-		playZone = new JPanel();
+		playZone = game.getPlayZone();
+		
 		frog = new JLabel();
-		playZone.setLocation(6, 6);
-		playZone.setSize(700, 448);
-		frog.setIcon(new ImageIcon("./rsz_1dz.jpg"));
-		frog.setLocation(playZone.getWidth()/2-frog.getWidth(), playZone.getHeight()/2-frog.getHeight());
+		ImageIcon object = new ImageIcon("./rsz_1dz.jpg");
+		frog.setBounds(playZone.getWidth()/2-frog.getWidth(), playZone.getHeight()/2-frog.getHeight(), object.getIconWidth(), object.getIconHeight());
+		frog.setIcon(object);
 		playZone.add(frog);
-		game.add(playZone, BorderLayout.CENTER);
 	}
 	private void initPipes(){
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < 5; i++) {
 			addPipe();
 		}
 	}
 	private void addPipe(){
 		Random rand = new Random();
 		int pipeWidth = 40;
-		int space = 140;
-		int topHeight = 50 + rand.nextInt(250);
+		int space = 170;
+		int gap = 200;
+		int topHeight = 50 + rand.nextInt(200);
 		int bottomHeight = playZone.getHeight()-space-topHeight;
-		int pipeCapacity = pipes.size()/2;
+		
 		JButton top = new JButton();
 		JButton bottom = new JButton();
+		if (pipes.isEmpty()) {
+			top.setBounds(playZone.getWidth() + gap, 0, pipeWidth, topHeight);
+			bottom.setBounds(playZone.getWidth() + gap, topHeight + space, pipeWidth, bottomHeight);
+		} else {
+			top.setBounds(pipes.getLast().getX() + gap, 0, pipeWidth, topHeight);
+			bottom.setBounds(pipes.getLast().getX() + gap, topHeight + space, pipeWidth, bottomHeight);
+		}
+		
 		playZone.add(top);
 		playZone.add(bottom);
-		top.setLocation(playZone.getWidth() + pipeCapacity * 170, 0);
-		bottom.setLocation(playZone.getWidth() + pipeCapacity * 170, topHeight + space);
-		top.setPreferredSize(new Dimension(pipeWidth, topHeight));
-		bottom.setPreferredSize(new Dimension(pipeWidth, bottomHeight));
-		pipes.add(top);
-		pipes.add(bottom);
+		pipes.addLast(top);
+		pipes.addLast(bottom);
 		
 	}
 
@@ -108,10 +111,11 @@ public class GameController implements MouseListener{
 		fallingVelocity = -10;
 	}
 	private void pipesMotion(){
-		for(int i = 0; i < pipes.size(); i++){
-			pipes.get(i).setLocation(pipes.get(i).getX()-1, pipes.get(i).getY());
-			if(pipes.get(i).getX()+pipes.get(i).getWidth() < 0){
-				pipes.remove(i--);
+		for(JButton pipe : pipes){
+			pipe.setLocation(pipe.getX()-2, pipe.getY());
+			if(pipe.getX()+pipe.getWidth() < 0){
+				pipes.removeFirst();
+				pipes.removeFirst();
 				addPipe();
 			}
 		}
