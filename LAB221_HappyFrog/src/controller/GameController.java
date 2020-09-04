@@ -2,15 +2,10 @@ package controller;
 
 import entity.*;
 import game.*;
-import java.awt.Font;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.LinkedList;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -20,12 +15,12 @@ import javax.swing.JPanel;
  * @author Ninh
  */
 public class GameController implements MouseListener{
-//	private Frog frog;											LATER
+	private Frog frog;										
 	private LinkedList<Pipe> pipes;
 	private GameMemory memory;
 	
 	private Game game;
-	private JLabel frog;
+//	private JLabel frog;
 	private JPanel playZone;
 	private JLabel labelPoint;
 
@@ -69,7 +64,6 @@ public class GameController implements MouseListener{
 		point = 0;
 		initInteface();
 		playZone.addMouseListener(this);
-		initPipes();
 		// Frog's Thread 
 		new Thread() {
 			@Override
@@ -107,11 +101,8 @@ public class GameController implements MouseListener{
 		playZone = game.getPlayZone();
 		labelPoint = game.getLabelPoint();
 		labelPoint.setText("Points: 0");
-		frog = new JLabel();
-		ImageIcon object = new ImageIcon("./rsz_1dz.jpg");
-		frog.setBounds(playZone.getWidth()/3, playZone.getHeight()/2, object.getIconWidth(), object.getIconHeight());
-		frog.setIcon(object);
-		playZone.add(frog);
+		frog = new Frog(playZone);
+		initPipes();
 	}
 	private void initPipes(){
 		for (int i = 0; i < 5; i++) {
@@ -129,7 +120,7 @@ public class GameController implements MouseListener{
 		for(Pipe pipe : pipes){
 			pipe.move(2);
 			int location = pipe.getTop().getX();
-			if (frog.getBounds().intersects(pipe.getTop().getBounds()) || frog.getBounds().intersects(pipe.getBottom().getBounds())) {
+			if (frog.hasIntersect(pipe)) {
 				isRunning = false;
 				hasOver = true;
 				return;
@@ -159,7 +150,7 @@ public class GameController implements MouseListener{
 			fallingVelocity += 1;
 		}
 
-		frog.setLocation(frog.getX(), frog.getY() + fallingVelocity);
+		frog.fall(fallingVelocity);
 		
 		// Block top
 		if(frog.getY() <= 0){
@@ -186,7 +177,6 @@ public class GameController implements MouseListener{
 		point = 0;
 		pipes.clear();
 		initInteface();
-		initPipes();		
 		playZone.updateUI();
 	}
 

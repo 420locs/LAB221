@@ -6,9 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -39,7 +37,6 @@ public class GameController {
 	private int timer;
 	private int moveCount;
 	private boolean isPlaying = false;
-	private Thread timing;
 	
 
 	public GameController() {
@@ -54,7 +51,7 @@ public class GameController {
 			}
 		});
 		t.start();
-//		timing = new Thread(){
+//		Thread timing = new Thread(){
 //			@Override
 //			public void run() {
 //				while(true){
@@ -71,7 +68,6 @@ public class GameController {
 //			}	
 //		};
 //		timing.start();
-		moveCount = 0;
 		v.setVisible(true);
 	}
 
@@ -130,9 +126,13 @@ public class GameController {
 	 * Check can a game is solvable or not.
 	 * A solvable game must have 2 factors:
 	 *	+ Inversion: pair of numbers haven't in order (number a > number b)
-	 *	+ Polarity: number of Inversion (Odd is unsolvable, Even is solvable)
-	 * @param list of number shuffled
-	 * @return solvable or not
+	 *	+ Polarity: number of Inversion 
+	 *		If size is odd -> polarity : Odd is unsolvable, Even is solvable
+	 *		If size is even:
+	 *			Blank button in odd row(counting from the top) -> polarity : Odd is solvable, Even is unsolvable
+	 *			otherwise -> polarity : Odd is unsolvable, Even is solvable
+	 * @param list list of number shuffled
+	 * @return True solvable list; False otherwise
 	 */
 	boolean isSolvable(List<Integer> list){
 		int polarity = 0;

@@ -1,11 +1,6 @@
 package game;
 
 import controller.GameController;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.HeadlessException;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -21,6 +16,7 @@ public class Game extends javax.swing.JFrame {
 	 */
 	public Game() {
 		initComponents();
+		setLocationRelativeTo(null);
 		controller = new GameController(this);
 	} 
 	/**
@@ -37,6 +33,7 @@ public class Game extends javax.swing.JFrame {
         playZone = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Happy Frog Game");
         setResizable(false);
         addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
