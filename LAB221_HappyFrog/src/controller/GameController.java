@@ -1,19 +1,18 @@
 package controller;
 
+import entity.*;
 import game.*;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
@@ -21,36 +20,72 @@ import javax.swing.JPanel;
  * @author Ninh
  */
 public class GameController implements MouseListener{
-
+//	private Frog frog;											LATER
+	private LinkedList<Pipe> pipes;
+	private GameMemory memory;
+	
 	private Game game;
 	private JLabel frog;
 	private JPanel playZone;
+	private JLabel labelPoint;
 
 	private int fallingVelocity = 10;
 
-	private boolean isRunning = true;					//True default for testing, change it after finished the test
-	LinkedList<JButton> pipes;
+	private boolean isRunning;
+	private boolean hasOver;
+	private boolean hasStart;
+	private int point;
+
+	public boolean hasOver() {
+		return hasOver;
+	}
+
+	public void setOver(boolean hasOver) {
+		this.hasOver = hasOver;
+	}
+
+	public boolean hasStart() {
+		return hasStart;
+	}
+
+	public void setStart(boolean hasStart) {
+		this.hasStart = hasStart;
+	}
+
+	public boolean hasRunning() {
+		return isRunning;
+	}
+
+	public void setRunning(boolean isRunning) {
+		this.isRunning = isRunning;
+	}
+	
 	public GameController() {
 	}
 
 	public GameController(Game game) {
 		this.game = game;
 		pipes = new LinkedList<>();
+		point = 0;
 		initInteface();
 		playZone.addMouseListener(this);
 		initPipes();
+		// Frog's Thread
 		new Thread() {
 			@Override
 			public void run() {
 				while (true) {
 					try {
-						frogMotion();
-						Thread.sleep(30);
+						Thread.sleep(1);
+						if(hasStart)
+							frogMotion();
+						Thread.sleep(29);
 					} catch (InterruptedException e) {
 					}
 				}
 			}
 		}.start();
+		// Game's Thread
 		new Thread(){
 			@Override
 			public void run() {
@@ -70,10 +105,11 @@ public class GameController implements MouseListener{
 	}
 	private void initInteface(){
 		playZone = game.getPlayZone();
-		
+		labelPoint = game.getLabelPoint();
+		labelPoint.setText("Points: 0");
 		frog = new JLabel();
 		ImageIcon object = new ImageIcon("./rsz_1dz.jpg");
-		frog.setBounds(playZone.getWidth()/2-frog.getWidth(), playZone.getHeight()/2-frog.getHeight(), object.getIconWidth(), object.getIconHeight());
+		frog.setBounds(playZone.getWidth()/3, playZone.getHeight()/2, object.getIconWidth(), object.getIconHeight());
 		frog.setIcon(object);
 		playZone.add(frog);
 	}
@@ -82,63 +118,76 @@ public class GameController implements MouseListener{
 			addPipe();
 		}
 	}
-	private void addPipe(){
-		Random rand = new Random();
-		int pipeWidth = 40;
-		int space = 170;
-		int gap = 200;
-		int topHeight = 50 + rand.nextInt(200);
-		int bottomHeight = playZone.getHeight()-space-topHeight;
-		
-		JButton top = new JButton();
-		JButton bottom = new JButton();
-		if (pipes.isEmpty()) {
-			top.setBounds(playZone.getWidth() + gap, 0, pipeWidth, topHeight);
-			bottom.setBounds(playZone.getWidth() + gap, topHeight + space, pipeWidth, bottomHeight);
-		} else {
-			top.setBounds(pipes.getLast().getX() + gap, 0, pipeWidth, topHeight);
-			bottom.setBounds(pipes.getLast().getX() + gap, topHeight + space, pipeWidth, bottomHeight);
-		}
-		
-		playZone.add(top);
-		playZone.add(bottom);
-		pipes.addLast(top);
-		pipes.addLast(bottom);
-		
+
+	private void addPipe() {
+		Pipe pipe = new Pipe(playZone, pipes);
+		pipes.add(pipe);
 	}
 
-	public void jump() {
-		fallingVelocity = -10;
-	}
+
 	private void pipesMotion(){
-		for(JButton pipe : pipes){
-			pipe.setLocation(pipe.getX()-2, pipe.getY());
-			if(pipe.getX()+pipe.getWidth() < 0){
-				pipes.removeFirst();
+		for(Pipe pipe : pipes){
+			pipe.move(2);
+			int location = pipe.getTop().getX();
+			if (frog.getBounds().intersects(pipe.getTop().getBounds()) || frog.getBounds().intersects(pipe.getBottom().getBounds())) {
+				isRunning = false;
+				hasOver = true;
+				return;
+			}
+ 			if(location <= playZone.getWidth()/3 && !pipe.hasCount()){
+				labelPoint.setText("Points: " + ++point);
+				pipe.setCount(true);
+			}
+			if(location + pipe.WIDTH < 0){
 				pipes.removeFirst();
 				addPipe();
 			}
 		}
 		
 	}
+	public void jump() {
+		if(!hasStart){
+			hasStart = true;
+		}
+		if (!hasOver) {
+			isRunning = true;
+			fallingVelocity = -10;
+		}
+	}
 	private void frogMotion() {
-		if (fallingVelocity < 10) {
+		if (fallingVelocity < 12) {
 			fallingVelocity += 1;
 		}
 
 		frog.setLocation(frog.getX(), frog.getY() + fallingVelocity);
+		
+		// Block top
+		if(frog.getY() <= 0){
+			fallingVelocity = 0;
+			frog.setLocation(frog.getX(),0);
+		}
+		// Block land
 		if (frog.getY() >= playZone.getHeight()-frog.getHeight()) {
 			fallingVelocity = 0;
 			frog.setLocation(frog.getX(), playZone.getHeight()-frog.getHeight());
+			isRunning = false;
+			hasStart = false;
+			gameOver();
 		}
-
 	}
-
-	public void g() {
-		// Default location of the frog
-		frog.setLocation(new Point(playZone.getWidth() / 4 - frog.getWidth() / 2, playZone.getHeight() / 2 - frog.getHeight() / 2));
-		frog.setText("");
-		System.out.println("djt con me may");
+	private void gameOver(){
+		hasOver = true;
+		JOptionPane.showMessageDialog(playZone, "Score: " + point, "GAMEOVER", JOptionPane.PLAIN_MESSAGE);
+		newGame();
+	}
+	private void newGame(){
+		hasOver = false;
+		playZone.removeAll();
+		point = 0;
+		pipes.clear();
+		initInteface();
+		initPipes();		
+		playZone.updateUI();
 	}
 
 	@Override

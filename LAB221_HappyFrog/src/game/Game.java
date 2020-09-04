@@ -37,6 +37,7 @@ public class Game extends javax.swing.JFrame {
         playZone = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
         addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 formMouseClicked(evt);
@@ -115,7 +116,17 @@ public class Game extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnPauseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPauseActionPerformed
-		
+		if (!controller.hasOver()) {
+			if (controller.hasRunning()) {
+				btnPause.setText("Play");
+				controller.setRunning(false);
+				controller.setStart(false);
+			} else {
+				btnPause.setText("Pause");
+				controller.setStart(true);
+				controller.setRunning(true);
+			}
+		}
     }//GEN-LAST:event_btnPauseActionPerformed
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
@@ -174,10 +185,6 @@ public class Game extends javax.swing.JFrame {
 	public JButton getBtnSave() {
 		return btnSave;
 	}
-
-//	public JLabel getFrog() {
-//		return frog;
-//	}
 
 	public JLabel getLabelPoint() {
 		return labelPoint;
