@@ -70,7 +70,7 @@ public class GameController implements MouseListener{
 		initInteface();
 		playZone.addMouseListener(this);
 		initPipes();
-		// Frog's Thread
+		// Frog's Thread 
 		new Thread() {
 			@Override
 			public void run() {
