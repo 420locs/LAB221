@@ -96,6 +96,7 @@ public class GameController {
 		});
 		
 	}
+	
 	/**
 	 * Update size of game.
 	 * get size from ComboBox and assign to global size.
