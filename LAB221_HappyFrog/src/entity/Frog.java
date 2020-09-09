@@ -15,6 +15,7 @@ public class Frog {
 	}
 
 	public Frog(ImageIcon icon, JPanel playZone) {
+		
 		fallingVelocity = 10;
 		frog = new JLabel();
 		frog.setBounds(playZone.getWidth()/3, playZone.getHeight()/2, icon.getIconWidth(), icon.getIconHeight());

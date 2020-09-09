@@ -39,6 +39,7 @@ public class Game extends javax.swing.JFrame {
         setTitle("Happy Frog Game");
         setFocusCycleRoot(false);
         setFocusable(false);
+        setResizable(false);
         addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 formMouseClicked(evt);

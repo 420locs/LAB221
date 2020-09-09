@@ -129,7 +129,7 @@ public class GameController{
 		labelScoreboard.setText("Points: 0");
 		panelPlayzone = game.getPanelPlayzone();
 		panelPlayzone.removeAll();
-		frog = new Frog(new ImageIcon("./rsz_1dz.jpg"),panelPlayzone);
+		frog = new Frog(new ImageIcon("./frog.jpg"),panelPlayzone);
 		initPipes();
 		panelPlayzone.updateUI();
 	}
@@ -292,7 +292,7 @@ public class GameController{
 	 */
 	public void returnGame(){
 		panelPlayzone.removeAll();
-		frog = new Frog(new ImageIcon("./rsz_1dz.jpg"),panelPlayzone);
+		frog = new Frog(new ImageIcon("./frog.jpg"),panelPlayzone);
 		frog.setLocation(memory.getFrogX(), memory.getFrogY());
 		frog.setFallingVelocity(memory.getFrogVelocity());
 		pipes.clear();
