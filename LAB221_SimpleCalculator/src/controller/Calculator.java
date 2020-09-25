@@ -1,7 +1,8 @@
 package controller;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 /**
@@ -13,7 +14,7 @@ enum Operator {
 }
 
 public class Calculator {
-	private double number0, number1, memory = 0;
+	private BigDecimal number0, number1, memory = BigDecimal.ZERO;
 	
 	private JTextField txtDisplay;
 	private boolean isReset = true;
@@ -36,9 +37,10 @@ public class Calculator {
 		txtDisplay.setText(txtDisplay.getText() + value);
 	}
 	private boolean hasMemory(){
-		if(memory == 0)
+		if(memory == BigDecimal.ZERO)
 			return false;
 		return true;
+		
 	}
 	public void pressDigit(JButton btn){
 		if(isZero() || isReset) {
@@ -51,7 +53,7 @@ public class Calculator {
 	}
 	public void pressOperator(JButton op){
 		if(operator == Operator.NONE){
-			number0 = Double.parseDouble(txtDisplay.getText());
+			number0 = new BigDecimal(txtDisplay.getText());
 		} else {
 			if(!isPickingOperator)
 				pressEqual();
@@ -78,28 +80,30 @@ public class Calculator {
 		if(isZero())
 			return;
 
-		number0 = Double.parseDouble(txtDisplay.getText());
+		number0 = new BigDecimal(txtDisplay.getText());
 		switch(operator.getText()){
 			case "+/-":
-				number0 = -number0;
+				number0 = number0.negate();
 				break;
 			case "1/x":
-				number0 = 1/number0;
+				number0 = BigDecimal.ONE.divide(number0);
 				break;
 			case "%":
-				number0 = number0/100;
+				number0 = number0.divide(BigDecimal.valueOf(100));
 				break;
 			default:
-				if(number0 < 0){
+				if(number0.doubleValue() < 0){
 					txtDisplay.setText("ERROR");
 					isReset = true;
 					return;
 				}
-				number0 = Math.sqrt(number0);
+				number0 = BigDecimal.valueOf(Math.sqrt(number0.doubleValue()));
 				break;
 		}
-		txtDisplay.setText(number0+"");
+		this.operator = Operator.NONE;
+		isPickingOperator = false;
 		isReset = true;
+		txtDisplay.setText(number0.doubleValue()+"");
 	}
 	public void pressEqual(){
 		if(operator == Operator.NONE){
@@ -107,9 +111,9 @@ public class Calculator {
 			return;
 		}
 		try {
-			number1 = Double.parseDouble(txtDisplay.getText());
+			number1 = new BigDecimal(txtDisplay.getText());
 		} catch (NumberFormatException e) {
-			txtDisplay.setText(number0+"");
+			txtDisplay.setText(number0.doubleValue()+"");
 			isReset = true;
 			return;
 		}
@@ -117,45 +121,45 @@ public class Calculator {
 		
 		switch(operator){
 			case ADD:
-				number0 += number1;
+				number0 = number0.add(number1);
 				break;
 			case SUBTRACT:
-				number0 -= number1;
+				number0 = number0.subtract(number1);
 				break;
 			case MULTIPLY:
-				number0 *= number1;
+				number0 = number0.multiply(number1);
 				break;
 			case DIVIDE:
-				if(number1 == 0){
+				if(number1 == BigDecimal.ZERO){
 					txtDisplay.setText("ERROR");
 					operator = Operator.NONE;
 					isReset = true;
 					return;
 				}
-				number0 /= number1;
+				number0 = number0.divide(number1, MathContext.DECIMAL64);
 				break;
 		}
 		operator = Operator.NONE;
-		txtDisplay.setText(number0+"");
 		isPickingOperator = false;
 		isReset = true;
+		txtDisplay.setText(number0.doubleValue()+"");
 	}
 	public void pressMR(){
 		txtDisplay.setText(memory+"");
 		isReset = true;
 	}
 	public void pressMAdd(JButton btnMR){
-		memory += Double.parseDouble(txtDisplay.getText());
+		memory.add(new BigDecimal(txtDisplay.getText()));
 		btnMR.setEnabled(hasMemory());
 		isReset = true;
 	}
-	public void pressMMinus(JButton btnMR){
-		memory -= Double.parseDouble(txtDisplay.getText());
+	public void pressMMinus(JButton btnMR){		
+		memory.subtract(new BigDecimal(txtDisplay.getText()));
 		btnMR.setEnabled(hasMemory());
 		isReset = true;
 	}
 	public void pressMC(JButton btnMR){
-		memory = 0;
+		memory = BigDecimal.ZERO;
 		btnMR.setEnabled(hasMemory());
 	}
 	public void pressDot(){
@@ -166,8 +170,8 @@ public class Calculator {
 		displayAppend(".");
 	}
 	public void pressClearAll(){
-		number0 = 0;
-		number1 = 0;
+		number0 = BigDecimal.ZERO;
+		number1 = BigDecimal.ZERO;
 		operator = Operator.NONE;
 	}
 }
