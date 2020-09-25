@@ -123,6 +123,7 @@ public class GameController {
 		} while (!isSolvable(list));
 		return list;
 	}
+	
 	/**
 	 * Check can a game is solvable or not.
 	 * A solvable game must have 2 factors:
@@ -147,6 +148,7 @@ public class GameController {
 				}
 			}
 		}
+		
 		if (size % 2 == 1) {
 			return polarity % 2 == 0;
 		} else {
@@ -217,8 +219,8 @@ public class GameController {
 						isPlaying = true;
 					}
 					int currentBtn = Integer.parseInt(button.getText());
-					int current = gameVector.indexOf(currentBtn);
-					moving(current);
+					int currentIndex = gameVector.indexOf(currentBtn);
+					moving(currentIndex);
 					winningNotification();
 				}
 			});
